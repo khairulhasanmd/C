@@ -46,9 +46,9 @@
 struct ResturantStruct {
   char name[50];
   char address[100];
-  char lat[12];
-  char lng[12];
-  char angle[20];
+  double lat;
+  double lng;
+  int angle;
 }ResturantStruct;
 
 struct MemoryStruct {
@@ -137,18 +137,22 @@ static void endElement(void *userData, const XML_Char *name)
   printf("%5lu   %10lu   %s   %s\n", state->depth, state->characters.size, state->characters.memory, name);
   if (state->depth==2 && (strcmp(name,"name")==0)){
     sprintf(state->resturants[state->iName].name,"%s",state->characters.memory);
+    //sscanf(state->characters.memory, "%lf", &state->resturants[state->iName].name);
     state->iName++;
   }
   if (state->depth==2 && (strcmp(name,"vicinity")==0)){
     sprintf(state->resturants[state->iAddress].address,"%s",state->characters.memory);
+    //sscanf(state->characters.memory, "%lf", &state->resturants[state->iAddress].address);
     state->iAddress++;
   }
   if (state->depth==4 && (strcmp(name,"lat")==0)){
-    sprintf(state->resturants[state->iLat].lat,"%s",state->characters.memory);
+    //sprintf(state->resturants[state->iLat].lat,"%s",state->characters.memory);
+    sscanf(state->characters.memory, "%lf", &state->resturants[state->iLat].lat);
     state->iLat++;
   }
   if (state->depth==4 && (strcmp(name,"lng")==0)){
-    sprintf(state->resturants[state->iLng].lng,"%s",state->characters.memory);
+    //sprintf(state->resturants[state->iLng].lng,"%s",state->characters.memory);
+    sscanf(state->characters.memory, "%lf", &state->resturants[state->iLng].lng);
     state->iLng++;
   }
 }
@@ -228,19 +232,26 @@ int main(void)
     printf("%s\n",state.resturants[i].address);
   }
   for(i=0;i<=state.iLat;i++){
-    printf("%s\n",state.resturants[i].lat);
+    printf("%lf\n",state.resturants[i].lat);
   }
   for(i=0;i<=state.iLng;i++){
-    printf("%s\n",state.resturants[i].lng);
+    printf("%lf\n",state.resturants[i].lng);
   }
   
+  for(i=0;i<=state.iLat;i++){
+    //sscanf(state.resturants[i].lat, "%lf", &Dlat);
+    //sscanf(state.resturants[i].lng, "%lf", &Dlng);
+    //sprintf(state.resturants[i].angle,"%lf",AngleFromCoordinates(23.7489959,90.3917064, Dlat, Dlng));
+    state.resturants[i].angle=AngleFromCoordinates(23.7489959,90.3917064, state.resturants[i].lat, state.resturants[i].lng);
+    printf("%d\n",state.resturants[i].angle);
+  }
+/*
   for(i=0;i<=state.iLat;i++){
     sscanf(state.resturants[i].lat, "%lf", &Dlat);
     sscanf(state.resturants[i].lng, "%lf", &Dlng);
     sprintf(state.resturants[i].angle,"%lf",AngleFromCoordinates(23.7489959,90.3917064, Dlat, Dlng));
     printf("%s\n",state.resturants[i].angle);
-  }
-
+  }*/
   /* Clean up. */
   free(state.characters.memory);
   XML_ParserFree(parser);
